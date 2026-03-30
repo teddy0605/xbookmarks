@@ -27,6 +27,7 @@ pnpm-debug.log*
 *.swo
 CLAUDE.md
 deploy-local.sh
+todo.md
 # Runtime and temp files
 tmp/
 temp/

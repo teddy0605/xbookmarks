@@ -88,10 +88,10 @@ export class XBookmarksSettingTab extends PluginSettingTab {
       .setDesc("Vault folder where bookmark notes will be created.")
       .addText((text) =>
         text
-          .setPlaceholder("X Bookmarks")
+          .setPlaceholder("X-Bookmarks")
           .setValue(this.plugin.settings.bookmarksFolder)
           .onChange(async (value) => {
-            this.plugin.settings.bookmarksFolder = value.trim() || "X Bookmarks";
+            this.plugin.settings.bookmarksFolder = value.trim() || "X-Bookmarks";
             await this.plugin.saveSettings();
           })
       );
@@ -101,11 +101,11 @@ export class XBookmarksSettingTab extends PluginSettingTab {
       .setDesc("Vault folder where notes are moved when you delete a bookmark on X.")
       .addText((text) =>
         text
-          .setPlaceholder("X Bookmarks/Archive")
+          .setPlaceholder("X-Bookmarks/Archive")
           .setValue(this.plugin.settings.archiveFolder)
           .onChange(async (value) => {
             this.plugin.settings.archiveFolder =
-              value.trim() || "X Bookmarks/Archive";
+              value.trim() || "X-Bookmarks/Archive";
             await this.plugin.saveSettings();
           })
       );

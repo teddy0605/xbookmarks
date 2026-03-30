@@ -25,7 +25,7 @@ This plugin uses X's internal GraphQL API — the same one the X website uses �
 
 1. Open Obsidian → Settings → Community plugins
 2. Turn off Safe mode
-3. Click **Browse** and search for **X Bookmarks**
+3. Click **Browse** and search for **X-Bookmarks**
 4. Click Install, then Enable
 
 ### Via BRAT (beta / pre-release)
@@ -41,11 +41,11 @@ cd xbookmarks
 npm install
 npm run build
 
-mkdir -p "/path/to/vault/.obsidian/plugins/obsidian-x-bookmarks"
-cp main.js manifest.json versions.json "/path/to/vault/.obsidian/plugins/obsidian-x-bookmarks/"
+mkdir -p "/path/to/vault/.obsidian/plugins/x-bookmarks"
+cp main.js manifest.json versions.json "/path/to/vault/.obsidian/plugins/x-bookmarks/"
 ```
 
-Then in Obsidian: Settings → Community plugins → Reload plugins → enable **X Bookmarks**.
+Then in Obsidian: Settings → Community plugins → Reload plugins → enable **X-Bookmarks**.
 
 ## Setup
 
@@ -62,7 +62,7 @@ These cookies are long-lived. You'll only need to repeat this if X logs you out.
 
 Click the **bookmark icon** in the ribbon (left sidebar), or open the command palette (`Ctrl/Cmd+P`) and run **"Sync X Bookmarks"**.
 
-Notes are created in the `X Bookmarks/` folder. Tip: do your first sync with AI tagging disabled if you have hundreds of bookmarks — enable it afterwards for new ones.
+Notes are created in the `X-Bookmarks/` folder. Tip: do your first sync with AI tagging disabled if you have hundreds of bookmarks — enable it afterwards for new ones.
 
 ## Note format
 
@@ -95,14 +95,14 @@ source: x-bookmarks
 
 ```dataview
 TABLE author, tags, tweet_date
-FROM "X Bookmarks"
+FROM "X-Bookmarks"
 WHERE status = "active"
 SORT tweet_date DESC
 ```
 
 ```dataview
 TABLE file.link, author
-FROM "X Bookmarks"
+FROM "X-Bookmarks"
 WHERE contains(tags, "ai")
 SORT tweet_date DESC
 ```
@@ -123,7 +123,7 @@ Two ways:
 1. **Inline button** — open the note in Reading view, click **Delete X bookmark** at the bottom
 2. **Command palette** — with the note open, run **"Delete current note's X bookmark"**
 
-The note is moved to `X Bookmarks/Archive/` with `status: archived` in its frontmatter. The bookmark is removed from X.
+The note is moved to `X-Bookmarks/Archive/` with `status: archived` in its frontmatter. The bookmark is removed from X.
 
 ## Troubleshooting
 
@@ -149,7 +149,7 @@ Use **Settings → Data Management → Reset sync state** to clear the sync hist
 ## Privacy
 
 All data stays local:
-- Your X credentials are stored only in your vault's `.obsidian/plugins/obsidian-x-bookmarks/data.json`
+- Your X credentials are stored only in your vault's `.obsidian/plugins/x-bookmarks/data.json`
 - Bookmarks are fetched directly from X to your vault — no intermediary servers
 - AI tagging runs entirely on your local machine
 
