@@ -1,3 +1,11 @@
+## 1.1.0 — 2026-03-30
+
+- Renamed plugin ID to `x-bookmarks` and name to `X-Bookmarks` (Obsidian marketplace compliance)
+- Notes now organized into `YYYY-MM` date subfolders automatically
+- New command: "Reorganize bookmarks into date folders" to migrate existing flat notes
+- Custom ribbon icon (bookmark with X)
+- Default vault folder renamed to `X-Bookmarks`
+
 ## 1.0.0 — 2026-03-30
 
 Initial release.
