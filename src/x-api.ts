@@ -209,16 +209,17 @@ export class XApiClient {
         ? result.tweet
         : result;
 
-    if (!actual.legacy || !actual.core || !actual.rest_id) return null;
+    if (!actual.legacy || !actual.core || !actual.rest_id) {
+      if (this.settings.debugMode) {
+        console.debug("[X-Bookmarks][parse] skipped (missing fields) typename=" + result.__typename + " rest_id=" + (result.rest_id ?? "?"));
+      }
+      return null;
+    }
 
     const legacy = actual.legacy;
     const userResult = actual.core.user_results.result;
     // X moved name/screen_name from legacy into a nested core object (2025+)
     const userCore = userResult?.core;
-
-    if (this.settings.debugMode) {
-      console.debug("[X-Bookmarks][debug] userCore=" + JSON.stringify(userCore) + " tweetId=" + actual.rest_id);
-    }
 
     // Collect media: photos/gifs as images, videos as best-bitrate MP4
     const mediaUrls: string[] = [];
@@ -235,10 +236,13 @@ export class XApiClient {
       }
     }
 
-    // Long-form tweets (note tweets) store full text outside legacy
+    // Long-form tweets (note tweets) store full text outside legacy.
+    // Fall back to a tweet URL so tweets with no text still get imported
+    // and marked synced — avoids infinite re-scan loop.
     const fullText =
-      actual.note_tweet?.note_tweet_results?.result?.text ?? legacy.full_text;
-    if (!fullText) return null;
+      actual.note_tweet?.note_tweet_results?.result?.text ??
+      legacy.full_text ??
+      `https://x.com/i/web/status/${actual.rest_id}`;
 
     // Expand t.co short URLs in tweet text
     let text: string = fullText;

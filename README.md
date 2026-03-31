@@ -60,7 +60,7 @@ These cookies are long-lived. You'll only need to repeat this if X logs you out.
 
 ### First sync
 
-Click the **bookmark icon** in the ribbon (left sidebar), or open the command palette (`Ctrl/Cmd+P`) and run **"Sync X Bookmarks"**.
+Click the **bookmark icon** in the ribbon (left sidebar), or open the command palette (`Ctrl/Cmd+P`) and run **"Sync bookmarks"**.
 
 Notes are created in the `X-Bookmarks/` folder. Tip: do your first sync with AI tagging disabled if you have hundreds of bookmarks — enable it afterwards for new ones.
 

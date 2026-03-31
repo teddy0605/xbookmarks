@@ -1,7 +1,7 @@
 {
 	"id": "x-bookmarks",
 	"name": "X-Bookmarks",
-	"version": "1.2.0",
+	"version": "1.2.1",
 	"minAppVersion": "1.4.4",
 	"description": "Sync your X (Twitter) bookmarks into your vault as markdown notes, with AI-powered tagging via local LLMs.",
 	"author": "teddy0605",

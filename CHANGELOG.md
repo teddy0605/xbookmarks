@@ -1,3 +1,8 @@
+## 1.2.1 — 2026-03-31
+
+- Fix tweets with no text content causing debug log spam on every sync — they now import with a fallback URL and get marked synced
+- Remove per-tweet debug log that fired on every parse (was temporary scaffolding for the userCore investigation)
+
 ## 1.2.0 — 2026-03-31
 
 - Fix delete bookmark failing with code 144 when the bookmark was already removed from X (note is now archived locally regardless)
