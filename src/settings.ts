@@ -48,18 +48,18 @@ export class XBookmarksSettingTab extends PluginSettingTab {
     containerEl.empty();
 
     // ── Authentication ──────────────────────────────────────────────────
-    containerEl.createEl("h2", { text: "X Authentication" });
+    new Setting(containerEl).setName("X authentication").setHeading();
     containerEl.createEl("p", {
       text: "Open x.com in Chrome/Firefox → DevTools (F12) → Application → Cookies → https://x.com — copy the two values below.",
       cls: "setting-item-description",
     });
 
     new Setting(containerEl)
-      .setName("auth_token")
-      .setDesc("Your X session cookie. Treat this like a password — keep it private.")
+      .setName("Auth token")
+      .setDesc("Your X session cookie (auth_token). Treat this like a password — keep it private.")
       .addText((text) =>
         text
-          .setPlaceholder("auth_token cookie value")
+          .setPlaceholder("Paste cookie value")
           .setValue(this.plugin.settings.authToken)
           .onChange(async (value) => {
             this.plugin.settings.authToken = value.trim();
@@ -68,11 +68,11 @@ export class XBookmarksSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("ct0")
-      .setDesc("Your X CSRF token cookie.")
+      .setName("CSRF token")
+      .setDesc("Your X CSRF token cookie (ct0).")
       .addText((text) =>
         text
-          .setPlaceholder("ct0 cookie value")
+          .setPlaceholder("Paste cookie value")
           .setValue(this.plugin.settings.ct0)
           .onChange(async (value) => {
             this.plugin.settings.ct0 = value.trim();
@@ -81,7 +81,7 @@ export class XBookmarksSettingTab extends PluginSettingTab {
       );
 
     // ── Vault Folders ───────────────────────────────────────────────────
-    containerEl.createEl("h2", { text: "Vault Folders" });
+    new Setting(containerEl).setName("Vault folders").setHeading();
 
     new Setting(containerEl)
       .setName("Bookmarks folder")
@@ -101,7 +101,7 @@ export class XBookmarksSettingTab extends PluginSettingTab {
       .setDesc("Vault folder where notes are moved when you delete a bookmark on X.")
       .addText((text) =>
         text
-          .setPlaceholder("X-Bookmarks/Archive")
+          .setPlaceholder("X-Bookmarks/archive")
           .setValue(this.plugin.settings.archiveFolder)
           .onChange(async (value) => {
             this.plugin.settings.archiveFolder =
@@ -111,7 +111,7 @@ export class XBookmarksSettingTab extends PluginSettingTab {
       );
 
     // ── Auto-Sync ───────────────────────────────────────────────────────
-    containerEl.createEl("h2", { text: "Auto-Sync" });
+    new Setting(containerEl).setName("Auto-sync").setHeading();
 
     new Setting(containerEl)
       .setName("Enable auto-sync")
@@ -160,7 +160,7 @@ export class XBookmarksSettingTab extends PluginSettingTab {
       );
 
     // ── AI Tagging ──────────────────────────────────────────────────────
-    containerEl.createEl("h2", { text: "AI Tagging" });
+    new Setting(containerEl).setName("AI tagging").setHeading();
     containerEl.createEl("p", {
       text: "Uses a local LLM via LM Studio (port 1234) or llama.cpp (port 8080). Tip: do your first sync without AI tagging enabled — it can be slow for large imports.",
       cls: "setting-item-description",
@@ -179,7 +179,7 @@ export class XBookmarksSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName("LLM API URL")
-      .setDesc("OpenAI-compatible API base URL. LM Studio default: http://localhost:1234/v1")
+      .setDesc("OpenAI-compatible API base URL.")
       .addText((text) =>
         text
           .setPlaceholder("http://localhost:1234/v1")
@@ -195,7 +195,7 @@ export class XBookmarksSettingTab extends PluginSettingTab {
       .setDesc("Exact model identifier shown in LM Studio or passed to llama.cpp at startup.")
       .addText((text) =>
         text
-          .setPlaceholder("model-name-from-lm-studio")
+          .setPlaceholder("Enter model name")
           .setValue(this.plugin.settings.llmModelName)
           .onChange(async (value) => {
             this.plugin.settings.llmModelName = value.trim();
@@ -204,7 +204,7 @@ export class XBookmarksSettingTab extends PluginSettingTab {
       );
 
     // ── Advanced ────────────────────────────────────────────────────────
-    containerEl.createEl("h2", { text: "Advanced" });
+    new Setting(containerEl).setName("Advanced").setHeading();
 
     new Setting(containerEl)
       .setName("Debug mode")
@@ -218,12 +218,12 @@ export class XBookmarksSettingTab extends PluginSettingTab {
           })
       );
     containerEl.createEl("p", {
-      text: "Only touch these if syncing breaks. X rotates these queryIds when they redeploy their frontend.",
+      text: "Only touch these if syncing breaks. X rotates these query IDs when they redeploy their frontend.",
       cls: "setting-item-description",
     });
 
     new Setting(containerEl)
-      .setName("Bookmarks queryId")
+      .setName("Bookmarks query ID")
       .setDesc("Find it: DevTools → Network → x.com/i/bookmarks → filter 'Bookmarks' → copy path segment after /graphql/")
       .addText((text) =>
         text
@@ -235,7 +235,7 @@ export class XBookmarksSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("DeleteBookmark queryId")
+      .setName("Delete bookmark query ID")
       .setDesc("Find it: trigger a bookmark delete on x.com → Network → filter 'DeleteBookmark' → copy path segment after /graphql/")
       .addText((text) =>
         text
@@ -247,7 +247,7 @@ export class XBookmarksSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("TweetResultByRestId queryId")
+      .setName("Article query ID")
       .setDesc("Used to fetch full X Article content. Find it: open an article on x.com → Network → filter 'TweetResultByRestId' → copy path segment after /graphql/")
       .addText((text) =>
         text
@@ -259,11 +259,11 @@ export class XBookmarksSettingTab extends PluginSettingTab {
       );
 
     // ── Data Management ─────────────────────────────────────────────────
-    containerEl.createEl("h2", { text: "Data Management" });
+    new Setting(containerEl).setName("Data management").setHeading();
 
     new Setting(containerEl)
       .setName("Reset sync state")
-      .setDesc("Clears the list of synced tweet IDs. Next sync will re-import all bookmarks from X.")
+      .setDesc("Clears the synced tweet list. Next sync will re-import all bookmarks from X.")
       .addButton((btn) =>
         btn
           .setButtonText("Reset")
@@ -272,7 +272,7 @@ export class XBookmarksSettingTab extends PluginSettingTab {
             this.plugin.settings.syncedTweetIds = [];
             this.plugin.settings.syncCursor = "";
             await this.plugin.saveSettings();
-            new Notice("[X Bookmarks] Sync state reset. Next sync will re-import all bookmarks.");
+            new Notice("Sync state reset. Next sync will re-import all bookmarks.");
           })
       );
   }

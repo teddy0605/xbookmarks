@@ -23,20 +23,20 @@ export default class XBookmarksPlugin extends Plugin {
     `);
 
     // Ribbon icon
-    this.addRibbonIcon("x-bookmark", "Sync X Bookmarks", () => {
-      this.syncBookmarks();
+    this.addRibbonIcon("x-bookmark", "Sync X bookmarks", () => {
+      void this.syncBookmarks();
     });
 
     // Command: sync
     this.addCommand({
-      id: "sync-x-bookmarks",
-      name: "Sync X Bookmarks",
-      callback: () => this.syncBookmarks(),
+      id: "sync",
+      name: "Sync bookmarks",
+      callback: () => { void this.syncBookmarks(); },
     });
 
     // Command: tag untagged notes
     this.addCommand({
-      id: "tag-untagged-x-bookmarks",
+      id: "tag-untagged",
       name: "Tag untagged X bookmark notes",
       callback: () => this.tagUntaggedNotes(),
     });
@@ -58,7 +58,7 @@ export default class XBookmarksPlugin extends Plugin {
         if (!file.path.startsWith(this.settings.bookmarksFolder + "/"))
           return false;
         if (checking) return true;
-        this.deleteBookmarkForFile(file);
+        void this.deleteBookmarkForFile(file);
         return true;
       },
     });
@@ -87,7 +87,7 @@ export default class XBookmarksPlugin extends Plugin {
         "border: 1px solid var(--text-muted); border-radius: 4px; padding: 2px 8px;";
       btn.addEventListener("click", (e) => {
         e.stopPropagation();
-        this.deleteBookmarkForFile(file);
+        void this.deleteBookmarkForFile(file);
       });
       actionsDiv.appendChild(btn);
     });
@@ -103,14 +103,17 @@ export default class XBookmarksPlugin extends Plugin {
         if (!file.path.startsWith(this.settings.bookmarksFolder + "/")) return;
         const view = this.app.workspace.getActiveViewOfType(MarkdownView);
         if (view && view.getMode() !== "preview") {
-          view.setState({ ...view.getState(), mode: "preview" }, { history: false });
+          void view.setState({ ...view.getState(), mode: "preview" }, { history: false });
         }
       })
     );
 
     // Set file explorer sort to newest-first (Z→A by date-prefixed filename)
     this.app.workspace.onLayoutReady(() => {
-      const fe = (this.app.workspace as any).getLeavesOfType("file-explorer")[0]?.view;
+      const workspace = this.app.workspace as unknown as {
+        getLeavesOfType: (type: string) => Array<{ view: { setSortOrder?: (order: string) => void } }>;
+      };
+      const fe = workspace.getLeavesOfType("file-explorer")[0]?.view;
       if (fe?.setSortOrder) fe.setSortOrder("alphabeticalReverse");
     });
 
@@ -144,7 +147,7 @@ export default class XBookmarksPlugin extends Plugin {
   private startAutoSync() {
     const ms = this.settings.autoSyncIntervalMinutes * 60 * 1000;
     this.autoSyncIntervalId = this.registerInterval(
-      window.setInterval(() => this.syncBookmarks(), ms)
+      window.setInterval(() => { void this.syncBookmarks(); }, ms)
     );
   }
 
@@ -157,19 +160,17 @@ export default class XBookmarksPlugin extends Plugin {
 
   async syncBookmarks() {
     if (this.isSyncing) {
-      new Notice("[X Bookmarks] Sync already in progress.");
+      new Notice("Sync already in progress.");
       return;
     }
 
     if (!this.settings.authToken || !this.settings.ct0) {
-      new Notice(
-        "[X Bookmarks] Please configure your auth_token and ct0 in settings first."
-      );
+      new Notice("Please configure your auth_token and ct0 in settings first.");
       return;
     }
 
     this.isSyncing = true;
-    const notice = new Notice("[X Bookmarks] Syncing bookmarks…", 0);
+    const notice = new Notice("Syncing bookmarks…", 0);
     const api = new XApiClient(this.settings);
     const sync = new ObsidianSync(this.app, this.settings);
     const tagger = new AiTagger(this.settings);
@@ -234,13 +235,13 @@ export default class XBookmarksPlugin extends Plugin {
       notice.hide();
       new Notice(
         totalNew > 0
-          ? `[X Bookmarks] Sync complete — ${totalNew} new bookmark${totalNew === 1 ? "" : "s"} imported.`
-          : "[X Bookmarks] Sync complete — no new bookmarks."
+          ? `Sync complete — ${totalNew} new bookmark${totalNew === 1 ? "" : "s"} imported.`
+          : "Sync complete — no new bookmarks."
       );
     } catch (e) {
       notice.hide();
-      new Notice(`[X Bookmarks] Sync failed: ${(e as Error).message}`);
-      console.error("[X Bookmarks]", e);
+      new Notice(`Sync failed: ${(e as Error).message}`);
+      console.error("[X-Bookmarks]", e);
     } finally {
       this.isSyncing = false;
     }
@@ -265,11 +266,11 @@ export default class XBookmarksPlugin extends Plugin {
 
   async tagUntaggedNotes() {
     if (this.isSyncing) {
-      new Notice("[X Bookmarks] Sync in progress — try again after it finishes.");
+      new Notice("Sync in progress — try again after it finishes.");
       return;
     }
     if (!this.settings.aiTaggingEnabled || !this.settings.llmModelName) {
-      new Notice("[X Bookmarks] Enable AI tagging and set a model name in settings first.");
+      new Notice("Enable AI tagging and set a model name in settings first.");
       return;
     }
 
@@ -286,11 +287,11 @@ export default class XBookmarksPlugin extends Plugin {
     });
 
     if (untagged.length === 0) {
-      new Notice("[X Bookmarks] No untagged notes found.");
+      new Notice("No untagged notes found.");
       return;
     }
 
-    const notice = new Notice(`[X Bookmarks] Tagging ${untagged.length} notes…`, 0);
+    const notice = new Notice(`Tagging ${untagged.length} notes…`, 0);
     let done = 0;
 
     for (const file of untagged) {
@@ -309,14 +310,14 @@ export default class XBookmarksPlugin extends Plugin {
           });
         }
         done++;
-        notice.setMessage(`[X Bookmarks] Tagging notes… ${done}/${untagged.length}`);
+        notice.setMessage(`Tagging notes… ${done}/${untagged.length}`);
       } catch {
         // skip failures silently
       }
     }
 
     notice.hide();
-    new Notice(`[X Bookmarks] Tagged ${done} note${done === 1 ? "" : "s"}.`);
+    new Notice(`Tagged ${done} note${done === 1 ? "" : "s"}.`);
   }
 
   private async migrateOldNotes() {
@@ -343,11 +344,11 @@ export default class XBookmarksPlugin extends Plugin {
     );
 
     if (files.length === 0) {
-      new Notice("[X Bookmarks] No flat notes to reorganize.");
+      new Notice("No flat notes to reorganize.");
       return;
     }
 
-    const notice = new Notice(`[X Bookmarks] Reorganizing ${files.length} notes…`, 0);
+    const notice = new Notice(`Reorganizing ${files.length} notes…`, 0);
     let moved = 0;
     let skipped = 0;
 
@@ -375,7 +376,7 @@ export default class XBookmarksPlugin extends Plugin {
 
     notice.hide();
     new Notice(
-      `[X Bookmarks] Reorganized ${moved} note${moved === 1 ? "" : "s"}` +
+      `Reorganized ${moved} note${moved === 1 ? "" : "s"}` +
         (skipped > 0 ? ` (${skipped} skipped)` : "") +
         "."
     );
@@ -386,23 +387,16 @@ export default class XBookmarksPlugin extends Plugin {
     const tweetId: string | undefined = cache?.frontmatter?.["id"];
 
     if (!tweetId) {
-      new Notice(
-        "[X Bookmarks] Could not find tweet ID in this note's frontmatter."
-      );
+      new Notice("Could not find tweet ID in this note's frontmatter.");
       return;
     }
 
     if (!this.settings.authToken || !this.settings.ct0) {
-      new Notice(
-        "[X Bookmarks] Please configure your auth_token and ct0 in settings first."
-      );
+      new Notice("Please configure your auth_token and ct0 in settings first.");
       return;
     }
 
-    const notice = new Notice(
-      `[X Bookmarks] Deleting bookmark ${tweetId}…`,
-      0
-    );
+    const notice = new Notice(`Deleting bookmark ${tweetId}…`, 0);
     const api = new XApiClient(this.settings);
     const sync = new ObsidianSync(this.app, this.settings);
 
@@ -416,11 +410,11 @@ export default class XBookmarksPlugin extends Plugin {
       await this.saveSettings();
 
       notice.hide();
-      new Notice("[X Bookmarks] Bookmark deleted and note archived.");
+      new Notice("Bookmark deleted and note archived.");
     } catch (e) {
       notice.hide();
-      new Notice(`[X Bookmarks] Delete failed: ${(e as Error).message}`);
-      console.error("[X Bookmarks]", e);
+      new Notice(`Delete failed: ${(e as Error).message}`);
+      console.error("[X-Bookmarks]", e);
     }
   }
 }

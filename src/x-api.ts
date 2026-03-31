@@ -217,7 +217,7 @@ export class XApiClient {
     const userCore = userResult?.core;
 
     if (this.settings.debugMode) {
-      console.log("[X Bookmarks][debug] userCore=" + JSON.stringify(userCore) + " tweetId=" + actual.rest_id);
+      console.debug("[X-Bookmarks][debug] userCore=" + JSON.stringify(userCore) + " tweetId=" + actual.rest_id);
     }
 
     // Collect media: photos/gifs as images, videos as best-bitrate MP4
@@ -294,7 +294,7 @@ export class XApiClient {
     });
 
     if (this.settings.debugMode) {
-      console.log("[X Bookmarks][article] status=" + response.status + " body=" + JSON.stringify(response.json).slice(0, 300));
+      console.debug("[X-Bookmarks][article] status=" + response.status + " body=" + JSON.stringify(response.json).slice(0, 300));
     }
     if (response.status !== 200) return null;
 
@@ -324,14 +324,21 @@ export class XApiClient {
   }
 
   async deleteBookmark(tweetId: string): Promise<void> {
+    const requestBody = {
+      variables: { tweet_id: tweetId },
+      queryId: this.settings.deleteBookmarkQueryId,
+    };
+    console.debug("[X-Bookmarks][delete] tweetId=" + tweetId + " queryId=" + this.settings.deleteBookmarkQueryId + " body=" + JSON.stringify(requestBody));
+
     const response = await requestUrl({
       url: `${X_GRAPHQL_BASE}/${this.settings.deleteBookmarkQueryId}/DeleteBookmark`,
       method: "POST",
       headers: this.buildHeaders(),
-      body: JSON.stringify({ variables: { tweet_id: tweetId } }),
-      contentType: "application/json",
+      body: JSON.stringify(requestBody),
       throw: false,
     });
+
+    console.debug("[X-Bookmarks][delete] status=" + response.status + " body=" + JSON.stringify(response.json).slice(0, 400));
 
     if (response.status === 401 || response.status === 403) {
       throw new Error(
@@ -345,6 +352,19 @@ export class XApiClient {
     }
 
     const body = response.json;
+
+    // Code 144 on tweet_bookmark_delete means the bookmark was already removed
+    // from X (e.g. deleted via x.com directly). Archive the note anyway.
+    if (body?.errors?.length > 0) {
+      const err = body.errors[0];
+      const code = err?.extensions?.code ?? err?.code;
+      const path: string = err?.path?.[0] ?? "";
+      if (code === 144 && path === "tweet_bookmark_delete") return;
+      throw new Error(
+        `Unexpected delete response: ${JSON.stringify(body).slice(0, 200)}`
+      );
+    }
+
     const result = body?.data?.tweet_bookmark_delete ?? body?.data?.delete_bookmark;
     if (result?.toLowerCase() !== "done") {
       throw new Error(

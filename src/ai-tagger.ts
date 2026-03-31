@@ -64,7 +64,7 @@ export class AiTagger {
 
       const parsed = JSON.parse(cleaned);
       if (Array.isArray(parsed) && parsed.every((t) => typeof t === "string")) {
-        return (parsed as string[]).slice(0, 5);
+        return parsed.slice(0, 5);
       }
     } catch (e) {
       console.warn("[XBookmarks] AI tagging error:", e);

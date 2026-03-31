@@ -23,7 +23,7 @@ export class ObsidianSync {
     const sanitized = articleMatch
       ? `X Article ${articleMatch[1].slice(-8)}`
       : rawText
-          .replace(/[\\/:*?"<>|#\[\]^]/g, "")
+          .replace(/[\\/:*?"<>|#[\]^]/g, "")
           .replace(/\s+/g, " ")
           .trim()
           .slice(0, 50)
